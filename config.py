@@ -7,9 +7,9 @@ from cx_model.vgg import vgg16
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-save_dir = 'model_68/'
+save_dir = 'model_test/'
 
-MODEL = resnet50(pretrained=True).to(device)
+MODEL = resnet50(pretrained=False).to(device)
 # modify
 ''' ResNet, Inception '''
 fc_feature = MODEL.fc.in_features
@@ -18,7 +18,7 @@ MODEL.fc = nn.Linear(fc_feature, 3).to(device)
 # cl_feature = MODEL.classifier[6].in_features
 # MODEL.classifier[6] = nn.Linear(cl_feature, 3).to(device)
 
-pthfile = ''  # /Disk1/chenxin/model/model_61/net_050.pth
+pthfile = '/Disk1/chenxin/model/resnet50-19c8e357.pth'  #
 
 Epoch = 50
 BatchSize = 32
@@ -27,5 +27,7 @@ Optimizer = 'adam'
 lr = 0.0001
 wd = 5e-3
 
-tensorboard_dir = '68/'
+SaveFreq = 10
+
+tensorboard_dir = 'test/'
 
