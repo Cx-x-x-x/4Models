@@ -29,9 +29,7 @@ args = parser.parse_args()
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-"""
-    data
-"""
+"""data"""
 train_transform = transforms.Compose([transforms.Resize((299, 299)),
                                       transforms.ColorJitter(brightness=0.05, contrast=0.05, saturation=0.05),
                                       transforms.RandomHorizontalFlip(),
@@ -52,19 +50,8 @@ test_dataset = ImageFolder('/Disk1/chenxin/LSID3_5_1/test0', transform=test_tran
 test_loader = DataLoader(dataset=test_dataset, batch_size=BatchSize,
                          shuffle=False, num_workers=40)
 
-
-"""
-    model
-"""
-model = MODEL.to(device)
-
-# modify
-''' ResNet, Inception '''
-fc_feature = model.fc.in_features
-model.fc = nn.Linear(fc_feature, 3).to(device)
-''' AlexNet, VGG '''
-# cl_feature = model.classifier[6].in_features
-# model.classifier[6] = nn.Linear(cl_feature, 3).to(device)
+""" model"""
+model = MODEL
 
 # load pth
 if pthfile is True:
