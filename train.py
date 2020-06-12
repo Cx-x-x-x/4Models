@@ -13,7 +13,7 @@ from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 
-from config import save_dir, MODEL, pthfile, Epoch, BatchSize, Optimizer, lr, wd, tensorboard_dir
+from config import device, save_dir, MODEL, pthfile, Epoch, BatchSize, Optimizer, lr, wd, tensorboard_dir
 from filter_weight_decay import group_weight
 
 writer = SummaryWriter('/Disk1/chenxin/runs/' + tensorboard_dir)
@@ -24,9 +24,6 @@ parser = argparse.ArgumentParser(description='PyTorch Training')
 parser.add_argument('--outf', default='/Disk1/chenxin/model/' + save_dir,
                     help='folder to output images and model checkpoints')
 args = parser.parse_args()
-
-
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 """data"""
