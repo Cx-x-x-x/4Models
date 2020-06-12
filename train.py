@@ -13,7 +13,7 @@ from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 
-from config import device, save_dir, MODEL, pthfile, Epoch, BatchSize, Optimizer, lr, wd, tensorboard_dir
+from config import device, save_dir, MODEL, pthfile, Epoch, BatchSize, Optimizer, lr, wd, SaveFreq, tensorboard_dir
 from filter_weight_decay import group_weight
 
 writer = SummaryWriter('/Disk1/chenxin/runs/' + tensorboard_dir)
@@ -145,7 +145,7 @@ if __name__ == "__main__":
                 print('测试分类准确率为：%.3f%%' % (acc))
 
                 # 保存模型 10epoch
-                if (epoch + 1) % 10 == 0:
+                if (epoch + 1) % SaveFreq == 0:
                     print('Saving model......')
                     torch.save(model.state_dict(), '%s/net_%03d.pth' % (args.outf, epoch + 1))
 
