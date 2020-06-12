@@ -51,15 +51,11 @@ test_loader = DataLoader(dataset=test_dataset, batch_size=BatchSize,
 model = MODEL
 
 # load pth
-if pthfile is True:
-    model.load_state_dict(torch.load(pthfile))
-else:
-    pass
-
-
-# view model graph
-# writer.add_graph(model, torch.randn([128, 3, 224, 224]).to(device), comments='alexnet')
-# writer.close()
+model_dict = model.state_dict()
+pretrained_dict = torch.load(pthfile)
+pretrained_dict = {k: v for k, v in pretrained_dict.items() if 'fc' not in k}
+model_dict.update(pretrained_dict)
+model.load_state_dict(model_dict, strict=True)
 
 # Loss and Optimizer
 parameters = group_weight(model)
@@ -91,7 +87,7 @@ if __name__ == "__main__":
             correct = 0.0
             total = 0.0
             for i, data in enumerate(train_loader, 0):
-                # 准备数据
+                # prepare data
                 length = len(train_loader)
                 inputs, labels = data
                 inputs, labels = inputs.to(device), labels.to(device)
@@ -102,13 +98,13 @@ if __name__ == "__main__":
                 loss = criterion(outputs, labels)
                 loss.backward()
                 optimizer.step()
-                # scheduler.step()
+                # scheduler.step() # todo
 
                 # 每训练1个batch打印一次loss和准确率
                 sum_loss += loss.item()
                 _, predicted = torch.max(outputs.data, 1)
                 total += labels.size(0)
-                correct += predicted.eq(labels.data).sum()  # todo predicted.eq().cpu().sum()
+                correct += predicted.eq(labels.data).sum()
                 print('[epoch:%d, iter:%d] Loss: %.03f | Acc: %.3f%% '
                       % (epoch + 1, (i + 1 + epoch * length), sum_loss / (i + 1), 100. * correct / total))
                 f2.write('%03d  %05d |Loss: %.03f | Acc: %.3f%% '
@@ -121,7 +117,6 @@ if __name__ == "__main__":
             f1.write('\n')
             f1.flush()
 
-            # tensor board
             # loss
             writer.add_scalar('train_acc', 100. * correct / total, global_step=epoch)
             # histogram
@@ -150,7 +145,7 @@ if __name__ == "__main__":
                 print('测试分类准确率为：%.3f%%' % (acc))
 
                 # 保存模型 10epoch
-                if (epoch + 1) % 25 == 0:
+                if (epoch + 1) % 10 == 0:
                     print('Saving model......')
                     torch.save(model.state_dict(), '%s/net_%03d.pth' % (args.outf, epoch + 1))
 
@@ -165,16 +160,6 @@ if __name__ == "__main__":
                     f3.write("EPOCH=%d,best_acc= %.3f%%" % (epoch + 1, acc))
                     f3.close()
                     best_acc = acc
-
-            # get some random training images
-            dataiter = iter(train_loader)
-            images, labels = dataiter.next()
-            # create grid of images
-            img_grid = torchvision.utils.make_grid(images)
-            # show images
-            # matplotlib.imshow(img_grid, one_channel=True)
-            # write to tensorboard
-            writer.add_image('imgs', img_grid)
 
         print("Training Finished, TotalEPOCH=%d" % Epoch)
 
