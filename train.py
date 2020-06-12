@@ -13,13 +13,7 @@ from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from torch.utils.data import DataLoader
 
-
-
-from cx_model.resnet import resnet50
-# from cx_model.alexnet import alexnet
-# from cx_model.vgg import vgg16
-
-from config import save_dir, pthfile, Epoch, BatchSize, Optimizer, lr, wd, tensorboard_dir
+from config import save_dir, MODEL, pthfile, Epoch, BatchSize, Optimizer, lr, wd, tensorboard_dir
 from filter_weight_decay import group_weight
 
 writer = SummaryWriter('/Disk1/chenxin/runs/' + tensorboard_dir)
@@ -35,7 +29,9 @@ args = parser.parse_args()
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
-# data
+"""
+    data
+"""
 train_transform = transforms.Compose([transforms.Resize((299, 299)),
                                       transforms.ColorJitter(brightness=0.05, contrast=0.05, saturation=0.05),
                                       transforms.RandomHorizontalFlip(),
@@ -49,7 +45,6 @@ test_transform = transforms.Compose([transforms.Resize((299, 299)),
                                      transforms.Normalize([0.72033167, 0.4602297, 0.38352215], [0.22272113, 0.19686753, 0.19163243])])
 
 train_dataset = ImageFolder('/Disk1/chenxin/LSID3_5_1/train0', transform=train_transform)
-# train_dataset = MyDataset('/Disk1/chenxin/data_cx/train_01.txt', transform=train_transform)
 train_loader = DataLoader(dataset=train_dataset, batch_size=BatchSize,
                           shuffle=True, num_workers=40)
 
@@ -58,11 +53,10 @@ test_loader = DataLoader(dataset=test_dataset, batch_size=BatchSize,
                          shuffle=False, num_workers=40)
 
 
-# todo load the model
-# model = resnet50(pretrained=True).to(device)
-# model = alexnet(pretrained=True).to(device)
-# model = vgg16(pretrained=True).to(device)
-model = torchvision.models.inception_v3(pretrained=True)
+"""
+    model
+"""
+model = MODEL.to(device)
 
 # modify
 ''' ResNet, Inception '''
